@@ -38,9 +38,17 @@ class ProductController extends Controller
             'quantity' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             'active' => 'boolean',
         ]);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('productos', 'public');
+            $data['image'] = '/storage/' . $imagePath;
+        } else {
+            $data['image'] = null;
+        }
+
         $product = Product::create($data);
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente');
     }
@@ -64,9 +72,15 @@ class ProductController extends Controller
             'quantity' => 'sometimes|required|integer',
             'category_id' => 'sometimes|required|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             'active' => 'boolean',
         ]);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('productos', 'public');
+            $data['image'] = '/storage/' . $imagePath;
+        }
+
         $product->update($data);
         return redirect()->route('products.index')->with('success', 'Producto actualizado exitosamente');
     }

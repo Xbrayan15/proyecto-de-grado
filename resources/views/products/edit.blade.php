@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        <form action="{{ route('products.update', $product->id) }}" method="POST">
+        <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
@@ -104,8 +104,8 @@
             </div>
 
             <div class="mb-6">
-                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">URL de Imagen (opcional)</label>
-                <input type="url" name="image" id="image" value="{{ old('image', $product->image) }}" 
+                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Imagen (opcional)</label>
+                <input type="file" name="image" id="image" accept="image/*"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('image') border-red-500 @enderror">
                 @error('image')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
