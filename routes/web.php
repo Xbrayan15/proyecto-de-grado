@@ -29,6 +29,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public catalog route
+Route::get('/catalog', [ProductController::class, 'catalog'])->name('products.catalog');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -45,9 +48,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('products', ProductController::class);
     Route::resource('orders', OrderController::class);
     Route::resource('order-items', OrderItemController::class);
-    Route::resource('inventory-orders', InventoryOrderController::class);    Route::resource('carts', CartController::class);
-    Route::resource('cart-items', CartItemController::class);
+    Route::resource('inventory-orders', InventoryOrderController::class);    Route::resource('carts', CartController::class);    Route::resource('cart-items', CartItemController::class);
     Route::resource('checkout', CheckoutController::class);
+      // Rutas específicas para el flujo de checkout
+    Route::get('/checkout/payment-methods/{cart_id}', [CheckoutController::class, 'paymentMethods'])->name('checkout.payment-methods');
+    Route::post('/checkout/select-payment-type', [CheckoutController::class, 'selectPaymentType'])->name('checkout.select-payment-type');
+    Route::get('/checkout/select-card/{cart_id}/{type}', [CheckoutController::class, 'selectCard'])->name('checkout.select-card');
+    Route::post('/checkout/process-with-existing-card', [CheckoutController::class, 'processWithExistingCard'])->name('checkout.process-with-existing-card');
+    Route::get('/checkout/add-card/{cart_id}/{type}', [CheckoutController::class, 'addCard'])->name('checkout.add-card');
+    Route::post('/checkout/process-payment', [CheckoutController::class, 'processPayment'])->name('checkout.process-payment');
+    
     Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('credit-cards', CreditCardController::class);
     Route::resource('payment-gateways', PaymentGatewayController::class);

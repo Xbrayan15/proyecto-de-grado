@@ -351,7 +351,7 @@ function sortTable(columnIndex) {
 
 function confirmDelete(id, name) {
     document.getElementById('deleteTypeName').textContent = name;
-    document.getElementById('deleteForm').action = `{{ route('movement-types.destroy', '') }}/${id}`;
+    document.getElementById('deleteForm').action = `{{ route('movement-types.destroy', ['movement_type' => ':id']) }}`.replace(':id', id);
     document.getElementById('deleteModal').classList.remove('hidden');
 }
 

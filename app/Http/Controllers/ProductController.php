@@ -15,6 +15,22 @@ class ProductController extends Controller
         return view('products.index', compact('products'));
     }
 
+    /**
+     * Show public catalog view
+     */
+    public function catalog()
+    {
+        $products = Product::with(['category', 'supplier'])
+            ->where('active', true)
+            ->paginate(12);
+        
+        $categories = Category::whereHas('products', function ($query) {
+            $query->where('active', true);
+        })->get();
+        
+        return view('products.catalog', compact('products', 'categories'));
+    }
+
     public function create()
     {
         $categories = Category::all();

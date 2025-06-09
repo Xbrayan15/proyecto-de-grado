@@ -279,9 +279,16 @@
             <!-- Quick Actions -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Acciones Rápidas</h3>
-                
-                <div class="space-y-3">
+                  <div class="space-y-3">
                     @if($cart->status === 'active')
+                        <!-- Proceder al Pago - Botón Principal -->
+                        <a href="{{ route('checkout.create', ['cart_id' => $cart->id]) }}" class="w-full flex items-center justify-center space-x-3 text-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 p-4 rounded-md font-semibold shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8M17 18a2 2 0 11-4 0 2 2 0 014 0zM9 18a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span>🛒 Proceder al Pago</span>
+                        </a>
+                        
                         <a href="{{ route('cart-items.create') }}?cart_id={{ $cart->id }}" class="w-full flex items-center space-x-3 text-sm text-white bg-green-600 hover:bg-green-700 transition-colors duration-200 p-3 rounded-md">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
