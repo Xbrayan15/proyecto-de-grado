@@ -104,16 +104,16 @@ class CheckoutController extends Controller
             // Procesar pago con tarjeta de crédito usando Stripe
             $result = $this->processStripePayment($orderPayment, $request, $totalAmount);
             $transactionStatus = $result['status'];
-            $paymentStatus = $result['status'] === 'success' ? 'paid' : 'pending';
-
-            // Crear registro de transacción
+            $paymentStatus = $result['status'] === 'success' ? 'paid' : 'pending';            // Crear registro de transacción
             $transaction = Transaction::create([
-                'orders_payment_id' => $orderPayment->id,
+                'user_id' => Auth::id(),
+                'order_id' => $orderPayment->id,
+                'payment_method_id' => $paymentMethod->id ?? null,
+                'gateway_id' => 1, // Por defecto, deberías tener un gateway configurado
                 'amount' => $totalAmount,
                 'status' => $transactionStatus,
-                'transaction_type' => 'purchase',
                 'currency' => 'USD',
-                'gateway_response' => json_encode($result ?? []),
+                'gateway_reference' => $result['stripe_payment_intent_id'] ?? 'test_' . time(),
             ]);
 
             // Actualizar estado del carrito solo si el pago fue exitoso
@@ -142,13 +142,12 @@ class CheckoutController extends Controller
 
     /**
      * Display the specified resource.
-     */
-    public function show(string $id)
+     */    public function show(string $id)
     {
         // Show checkout details/confirmation
         $orderPayment = OrdersPayment::where('id', $id)
                                    ->where('user_id', Auth::id())
-                                   ->with(['paymentMethod', 'transactions'])
+                                   ->with(['transactions.paymentMethod', 'transactions.gateway'])
                                    ->firstOrFail();
         
         return view('checkout.show', compact('orderPayment'));
