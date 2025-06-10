@@ -14,6 +14,8 @@ Route::apiResource('orders', App\Http\Controllers\OrderController::class);
 Route::apiResource('inventory-orders', App\Http\Controllers\InventoryOrderController::class);
 // Carritos
 Route::apiResource('carts', App\Http\Controllers\CartController::class);
+Route::middleware(['web', 'auth'])->get('carts/active', [App\Http\Controllers\CartController::class, 'getActiveCarts']);
+Route::middleware(['web', 'auth'])->post('carts/add-to-cart', [App\Http\Controllers\CartController::class, 'addToCart']);
 Route::apiResource('cart-items', App\Http\Controllers\CartItemController::class);
 // Checkout
 Route::apiResource('checkout', App\Http\Controllers\CheckoutController::class);

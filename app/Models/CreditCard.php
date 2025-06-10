@@ -17,6 +17,11 @@ class CreditCard extends Model
         'token_id',
     ];
 
+    protected $casts = [
+        'expiry_month' => 'integer',
+        'expiry_year' => 'integer',
+    ];
+
     public function paymentMethod(): BelongsTo
     {
         return $this->belongsTo(PaymentMethod::class);
