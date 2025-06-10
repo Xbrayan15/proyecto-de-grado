@@ -16,9 +16,6 @@
                     <x-nav-link :href="route('products.catalog')" :active="request()->routeIs('products.catalog')">
                         {{ __('Catalog') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('products.catalog')" :active="request()->routeIs('products.catalog')">
-                        {{ __('Catalog') }}
-                    </x-nav-link>
                 </div>
             </div>
 
