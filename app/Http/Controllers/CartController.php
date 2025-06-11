@@ -60,34 +60,39 @@ class CartController extends Controller
         $cart = Cart::findOrFail($id);
         $cart->delete();
         return redirect()->route('carts.index')->with('success', 'Carrito eliminado exitosamente');
-    }    /**
+    }
+
+    /**
      * Get active carts for API
      */
     public function getActiveCarts(Request $request)
     {
-        $user = Auth::user();
+        $userId = Auth::id();
         
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $carts = Cart::where('status', 'active')
+            ->when($userId, function ($query) use ($userId) {
+                return $query->where('user_id', $userId);
+            })
+            ->withCount('cartItems as items_count')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        // Get or create the user's single active cart
-        $activeCart = $this->getUserActiveCart($user);
-        $activeCart->loadCount('cartItems');
+        return response()->json($carts);
+    }
 
-        return response()->json([$activeCart]);
-    }/**
+    /**
      * Add product to cart via API
      */
     public function addToCart(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1'
+            'quantity' => 'required|integer|min:1',
+            'cart_id' => 'nullable|exists:carts,id'
         ]);
 
-        $user = Auth::user();
-        if (!$user) {
+        $userId = Auth::id();
+        if (!$userId) {
             return response()->json(['error' => 'Authentication required'], 401);
         }
 
@@ -100,8 +105,26 @@ class CartController extends Controller
                 'error' => 'Insufficient stock',
                 'available' => $product->quantity
             ], 400);
-        }        // Always use the user's active cart
-        $cart = $this->getUserActiveCart($user);
+        }
+
+        // Determine which cart to use
+        if ($request->cart_id) {
+            // Use existing cart if provided and belongs to user
+            $cart = Cart::where('id', $request->cart_id)
+                       ->where('user_id', $userId)
+                       ->where('status', 'active')
+                       ->first();
+                       
+            if (!$cart) {
+                return response()->json(['error' => 'Cart not found or not accessible'], 404);
+            }
+        } else {
+            // Create new cart for user
+            $cart = Cart::create([
+                'user_id' => $userId,
+                'status' => 'active'
+            ]);
+        }
 
         // Check if product already exists in cart
         $existingItem = \App\Models\CartItem::where('cart_id', $cart->id)

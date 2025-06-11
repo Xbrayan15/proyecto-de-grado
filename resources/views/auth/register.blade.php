@@ -26,7 +26,9 @@
                             required autocomplete="new-password" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>        <!-- Confirm Password -->
+        </div>
+
+        <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
 
@@ -35,17 +37,6 @@
                             name="password_confirmation" required autocomplete="new-password" />
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <!-- User Type -->
-        <div class="mt-4">
-            <x-input-label for="user_type" value="Tipo de Usuario" />
-            <select id="user_type" name="user_type" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                <option value="">Selecciona tu tipo de usuario</option>
-                <option value="cliente" {{ old('user_type') == 'cliente' ? 'selected' : '' }}>Cliente - Comprar productos</option>
-                <option value="vendedor" {{ old('user_type') == 'vendedor' ? 'selected' : '' }}>Vendedor - Gestionar ventas</option>
-            </select>
-            <x-input-error :messages="$errors->get('user_type')" class="mt-2" />
         </div>
 
         <div class="flex items-center justify-end mt-4">
