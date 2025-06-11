@@ -36,6 +36,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Customer dashboard
+Route::get('/customer-dashboard', function () {
+    return view('customer-dashboard');
+})->middleware(['auth', 'verified'])->name('customer.dashboard');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -48,15 +53,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('products', ProductController::class);
     Route::resource('orders', OrderController::class);
     Route::resource('order-items', OrderItemController::class);
-    Route::resource('inventory-orders', InventoryOrderController::class);    Route::resource('carts', CartController::class);    Route::resource('cart-items', CartItemController::class);
+    Route::resource('inventory-orders', InventoryOrderController::class);
+    Route::resource('carts', CartController::class);
+    Route::resource('cart-items', CartItemController::class);
+    
+    // API-style routes for cart management from frontend
+    Route::get('/api/carts/active', [CartController::class, 'getActiveCarts'])->name('api.carts.active');
+    Route::post('/api/carts/add-to-cart', [CartController::class, 'addToCart'])->name('api.carts.add-to-cart');
     Route::resource('checkout', CheckoutController::class);
       // Rutas específicas para el flujo de checkout
     Route::get('/checkout/payment-methods/{cart_id}', [CheckoutController::class, 'paymentMethods'])->name('checkout.payment-methods');
     Route::post('/checkout/select-payment-type', [CheckoutController::class, 'selectPaymentType'])->name('checkout.select-payment-type');
     Route::get('/checkout/select-card/{cart_id}/{type}', [CheckoutController::class, 'selectCard'])->name('checkout.select-card');
     Route::post('/checkout/process-with-existing-card', [CheckoutController::class, 'processWithExistingCard'])->name('checkout.process-with-existing-card');
-    Route::get('/checkout/add-card/{cart_id}/{type}', [CheckoutController::class, 'addCard'])->name('checkout.add-card');
-    Route::post('/checkout/process-payment', [CheckoutController::class, 'processPayment'])->name('checkout.process-payment');
+    Route::get('/checkout/add-card/{cart_id}/{type}', [CheckoutController::class, 'addCard'])->name('checkout.add-card');    Route::post('/checkout/process-payment', [CheckoutController::class, 'processPayment'])->name('checkout.process-payment');
+    
+    // Stripe PaymentIntent route
+    Route::post('/stripe/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('stripe.payment-intent');
     
     Route::resource('payment-methods', PaymentMethodController::class);
     Route::resource('credit-cards', CreditCardController::class);

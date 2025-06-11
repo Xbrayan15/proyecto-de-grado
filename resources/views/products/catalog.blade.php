@@ -165,18 +165,9 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Agregar al Carrito</h3>
                 <div class="mt-4 px-7 py-3">
                     <p class="text-sm text-gray-500" id="productInfo"></p>
-                    
-                    <form id="addToCartForm" class="mt-4 space-y-4">
+                      <form id="addToCartForm" class="mt-4 space-y-4">
                         @csrf
                         <input type="hidden" id="selectedProductId" name="product_id">
-                        
-                        <div>
-                            <label for="cartSelect" class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Carrito</label>
-                            <select id="cartSelect" name="cart_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="">Seleccione un carrito...</option>
-                                <option value="new">+ Crear nuevo carrito</option>
-                            </select>
-                        </div>
                         
                         <div>
                             <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Cantidad</label>
@@ -204,7 +195,6 @@ let allProducts = [];
 
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    loadActiveCarts();
     initializeProductsArray();
     setupEventListeners();
 });
@@ -314,43 +304,8 @@ function clearAllFilters() {
 }
 
 async function loadActiveCarts() {
-    try {
-        const response = await fetch('/api/carts/active', {
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        });
-        
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Unauthorized');
-            }
-            throw new Error('Failed to load carts');
-        }
-        
-        const carts = await response.json();
-        
-        const cartSelect = document.getElementById('cartSelect');
-        const defaultOptions = cartSelect.innerHTML;
-        cartSelect.innerHTML = defaultOptions;
-        
-        if (carts && carts.length > 0) {
-            carts.forEach(cart => {
-                const option = document.createElement('option');
-                option.value = cart.id;
-                option.textContent = `Carrito #${cart.id} (${cart.items_count || 0} items)`;
-                cartSelect.insertBefore(option, cartSelect.lastElementChild);
-            });
-        }
-    } catch (error) {
-        console.error('Error loading carts:', error);
-        // Show user-friendly message if not authenticated
-        if (error.message.includes('Unauthorized')) {
-            const cartSelect = document.getElementById('cartSelect');
-            cartSelect.innerHTML = '<option value="">Inicia sesión para agregar al carrito</option>';
-        }
-    }
+    // No longer needed since we have one cart per user
+    // This function is kept for backward compatibility
 }
 
 function addToCart(productId) {
@@ -369,13 +324,7 @@ function addToCart(productId) {
 }
 
 document.getElementById('confirmAddToCart').addEventListener('click', async function() {
-    const cartId = document.getElementById('cartSelect').value;
     const quantity = document.getElementById('quantity').value;
-    
-    if (!cartId) {
-        alert('Por favor seleccione un carrito o inicia sesión');
-        return;
-    }
     
     try {
         // Show loading state
@@ -393,10 +342,8 @@ document.getElementById('confirmAddToCart').addEventListener('click', async func
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                cart_id: cartId === 'new' ? null : cartId,
                 product_id: selectedProduct,
-                quantity: parseInt(quantity),
-                create_new_cart: cartId === 'new'
+                quantity: parseInt(quantity)
             })
         });
         
@@ -425,13 +372,9 @@ document.getElementById('confirmAddToCart').addEventListener('click', async func
                 notification.classList.add('translate-x-full');
                 setTimeout(() => notification.remove(), 300);
             }, 5000);
-            
-            // Close modal and reset
+              // Close modal and reset
             document.getElementById('addToCartModal').classList.add('hidden');
             document.getElementById('quantity').value = 1;
-            document.getElementById('cartSelect').value = '';
-            
-            loadActiveCarts();
         } else {
             alert('Error: ' + (result.message || 'No se pudo agregar el producto al carrito. Por favor, inicia sesión e intenta de nuevo.'));
         }
@@ -449,7 +392,6 @@ document.getElementById('confirmAddToCart').addEventListener('click', async func
 document.getElementById('cancelAddToCart').addEventListener('click', function() {
     document.getElementById('addToCartModal').classList.add('hidden');
     document.getElementById('quantity').value = 1;
-    document.getElementById('cartSelect').value = '';
 });
 
 // Close modal when clicking outside

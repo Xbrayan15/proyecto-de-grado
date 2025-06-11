@@ -59,7 +59,8 @@ class CheckoutController extends Controller
             return redirect()->route('carts.index')->with('error', 'No tienes productos en tu carrito para proceder al checkout.');
         }
           // Preload user's payment methods to avoid N+1 queries
-        Auth::user()->load('paymentMethods');
+        $user = User::find(Auth::id());
+        $user->load('paymentMethods');
         
         return view('checkout.create', compact('cart'));
     }
@@ -105,15 +106,16 @@ class CheckoutController extends Controller
             $result = $this->processStripePayment($orderPayment, $request, $totalAmount);
             $transactionStatus = $result['status'];
             $paymentStatus = $result['status'] === 'success' ? 'paid' : 'pending';            // Crear registro de transacción
+            $gateway = $this->getActivePaymentGateway();
             $transaction = Transaction::create([
                 'user_id' => Auth::id(),
                 'order_id' => $orderPayment->id,
-                'payment_method_id' => $paymentMethod->id ?? null,
-                'gateway_id' => 1, // Por defecto, deberías tener un gateway configurado
+                'payment_method_id' => $request->payment_method_id,
+                'gateway_id' => $gateway->id,
                 'amount' => $totalAmount,
-                'status' => $transactionStatus,
                 'currency' => 'USD',
-                'gateway_reference' => $result['stripe_payment_intent_id'] ?? 'test_' . time(),
+                'status' => $transactionStatus,
+                'gateway_reference' => $result['stripe_payment_intent_id'] ?? 'fallback_' . time(),
             ]);
 
             // Actualizar estado del carrito solo si el pago fue exitoso
@@ -298,14 +300,13 @@ class CheckoutController extends Controller
             // Procesar pago con tarjeta existente
             $result = $this->processStripePaymentWithExistingCard($orderPayment, $creditCard, $totalAmount);
             $transactionStatus = $result['status'];
-            $paymentStatus = $result['status'] === 'success' ? 'paid' : 'pending';
-
-            // Crear transacción
+            $paymentStatus = $result['status'] === 'success' ? 'paid' : 'pending';            // Crear transacción
+            $gateway = $this->getActivePaymentGateway();
             $transaction = Transaction::create([
                 'user_id' => Auth::id(),
                 'order_id' => $orderPayment->id,
                 'payment_method_id' => $creditCard->payment_method_id,
-                'gateway_id' => 1, // Por defecto, deberías tener un gateway configurado
+                'gateway_id' => $gateway->id,
                 'amount' => $totalAmount,
                 'currency' => 'USD',
                 'status' => $transactionStatus,
@@ -425,14 +426,13 @@ class CheckoutController extends Controller
             // Procesar pago con Stripe
             $result = $this->processStripePaymentWithNewCard($orderPayment, $request, $totalAmount);
             $transactionStatus = $result['status'];
-            $paymentStatus = $result['status'] === 'success' ? 'paid' : 'pending';
-
-            // Crear transacción
+            $paymentStatus = $result['status'] === 'success' ? 'paid' : 'pending';            // Crear transacción
+            $gateway = $this->getActivePaymentGateway();
             $transaction = Transaction::create([
                 'user_id' => Auth::id(),
                 'order_id' => $orderPayment->id,
                 'payment_method_id' => $paymentMethod->id,
-                'gateway_id' => 1, // Por defecto, deberías tener un gateway configurado
+                'gateway_id' => $gateway->id,
                 'amount' => $totalAmount,
                 'currency' => 'USD',
                 'status' => $transactionStatus,
@@ -465,8 +465,7 @@ class CheckoutController extends Controller
 
     /**
      * 🔵 Procesar pago con tarjeta de crédito usando Stripe
-     */
-    private function processStripePaymentWithNewCard($orderPayment, $request, $totalAmount)
+     */    private function processStripePaymentWithNewCard($orderPayment, $request, $totalAmount)
     {
         try {
             // Configurar Stripe con las claves del .env
@@ -496,11 +495,12 @@ class CheckoutController extends Controller
                     'user_id' => $user->id,
                     'card_last_four' => substr(str_replace(' ', '', $request->card_number), -4),
                     'card_brand' => $request->brand,
-                ],
-            ]);
+                ],            ]);
+            
+            $transactionStatus = $this->mapStripeStatusToTransactionStatus($paymentIntent->status);
             
             return [
-                'status' => 'success',
+                'status' => $transactionStatus,
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'stripe_status' => $paymentIntent->status,
                 'message' => 'Pago procesado exitosamente con nueva tarjeta'
@@ -515,14 +515,13 @@ class CheckoutController extends Controller
         }
     }/**
      * 🔵 Procesar pago con tarjeta de crédito usando Stripe
-     */
-    private function processStripePayment($orderPayment, $request, $totalAmount)
+     */    private function processStripePayment($orderPayment, $request, $totalAmount)
     {
         try {
             // Configurar Stripe
             Stripe::setApiKey(env('STRIPE_SECRET'));
             
-            $user = Auth::user();
+            $user = User::find(Auth::id());
             
             // Crear o obtener cliente de Stripe
             if (!$user->stripe_customer_id) {
@@ -559,11 +558,12 @@ class CheckoutController extends Controller
                 'brand' => 'visa',
                 'exp_month' => 12,
                 'exp_year' => 2025,
-                'is_default' => true,
-            ]);
+                'is_default' => true,            ]);
+            
+            $transactionStatus = $this->mapStripeStatusToTransactionStatus($paymentIntent->status);
             
             return [
-                'status' => 'success',
+                'status' => $transactionStatus,
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'stripe_status' => $paymentIntent->status,
                 'message' => 'Pago procesado exitosamente con Stripe'
@@ -579,8 +579,7 @@ class CheckoutController extends Controller
 
     /**
      * 🔵 Procesar pago con tarjeta existente usando Stripe
-     */
-    private function processStripePaymentWithExistingCard($orderPayment, $creditCard, $totalAmount)
+     */    private function processStripePaymentWithExistingCard($orderPayment, $creditCard, $totalAmount)
     {
         try {
             // Configurar Stripe con las claves del .env
@@ -611,11 +610,12 @@ class CheckoutController extends Controller
                     'existing_card_id' => $creditCard->id,
                     'card_last_four' => $creditCard->last_four,
                     'card_brand' => $creditCard->brand,
-                ],
-            ]);
+                ],            ]);
+            
+            $transactionStatus = $this->mapStripeStatusToTransactionStatus($paymentIntent->status);
             
             return [
-                'status' => 'success',
+                'status' => $transactionStatus,
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'stripe_status' => $paymentIntent->status,
                 'message' => 'Pago procesado exitosamente con tarjeta existente'
@@ -627,6 +627,91 @@ class CheckoutController extends Controller
                 'error' => $e->getMessage(),
                 'message' => 'Error al procesar el pago con tarjeta existente'
             ];
+        }
+    }
+
+    /**
+     * Get the active payment gateway
+     */
+    private function getActivePaymentGateway()
+    {
+        $gateway = PaymentGateway::where('status', 'active')
+                                 ->where('provider', 'stripe')
+                                 ->first();
+        
+        if (!$gateway) {
+            // Fallback to any active gateway
+            $gateway = PaymentGateway::where('status', 'active')->first();
+        }
+        
+        if (!$gateway) {
+            throw new \Exception('No active payment gateway found. Please configure a payment gateway.');
+        }        return $gateway;
+    }
+
+    /**
+     * Crear PaymentIntent para el frontend
+     */
+    public function createPaymentIntent(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'currency' => 'string|in:usd,eur',
+        ]);
+
+        try {
+            Stripe::setApiKey(env('STRIPE_SECRET'));
+            
+            $user = User::find(Auth::id());
+            
+            // Crear o obtener cliente de Stripe
+            if (!$user->stripe_customer_id) {
+                $stripeCustomer = StripeCustomer::create([
+                    'email' => $user->email,
+                    'name' => $user->name,
+                ]);
+                $user->update(['stripe_customer_id' => $stripeCustomer->id]);
+            }
+
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $request->amount * 100, // Convertir a centavos
+                'currency' => $request->currency ?? 'usd',
+                'customer' => $user->stripe_customer_id,
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                ],
+            ]);
+
+            return response()->json([
+                'client_secret' => $paymentIntent->client_secret,
+                'payment_intent_id' => $paymentIntent->id,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Mapear status de Stripe a status de transacción
+     */
+    private function mapStripeStatusToTransactionStatus($stripeStatus)
+    {
+        switch ($stripeStatus) {
+            case 'succeeded':
+                return 'success';
+            case 'processing':
+                return 'pending';
+            case 'requires_payment_method':
+            case 'requires_confirmation':
+            case 'requires_action':
+                return 'pending';
+            case 'canceled':
+                return 'failed';
+            default:
+                return 'failed';
         }
     }
 }

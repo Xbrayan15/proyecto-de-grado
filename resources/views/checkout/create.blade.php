@@ -124,48 +124,60 @@
                         </div>
                     </div>                    <!-- Payment Method Selection -->
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                 </svg>
                                 Método de Pago
-                            </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                Selecciona tu tarjeta de crédito para pagar
+                                <span class="ml-auto bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2 py-1 rounded-full">
+                                    Clickeable
+                                </span>
+                            </h3>                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                ✨ Selecciona tu método de pago preferido y luego ve al resumen para pagar
                             </p>
                         </div>
-                        <div class="p-6">
-                            @if(auth()->user()->paymentMethods && auth()->user()->paymentMethods->count() > 0)
+                        <div class="p-6">                            @if(auth()->user()->paymentMethods && auth()->user()->paymentMethods->count() > 0)
                                 <div class="space-y-3">
-                                    @foreach(auth()->user()->paymentMethods as $paymentMethod)
-                                        <label class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                    @foreach(auth()->user()->paymentMethods as $paymentMethod)                                        <label class="payment-method-card flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group hover:shadow-md {{ $loop->first ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md' : '' }}">
                                             <input type="radio" name="payment_method_id" value="{{ $paymentMethod->id }}" 
-                                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" required>
-                                            <div class="ml-3 flex-1">
+                                                   class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300" 
+                                                   {{ $loop->first ? 'checked' : '' }} required>
+                                            <div class="ml-4 flex-1">
                                                 <div class="flex items-center justify-between">
                                                     <div>
-                                                        <p class="text-sm font-medium text-gray-900 dark:text-white flex items-center">
-                                                            💳 {{ $paymentMethod->type ?? 'Tarjeta de Crédito' }}
+                                                        <p class="text-base font-semibold text-gray-900 dark:text-white flex items-center">
+                                                            💳 {{ $paymentMethod->type === 'credit_card' ? 'Tarjeta de Crédito' : 'Tarjeta de Débito' }}
+                                                            <span class="ml-2 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 text-xs font-medium px-2 py-1 rounded-full">
+                                                                ✓ Seleccionable
+                                                            </span>
                                                         </p>
-                                                        <p class="text-xs text-gray-600 dark:text-gray-400">
-                                                            {{ $paymentMethod->description ?? 'Pago seguro con Stripe' }}
+                                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                            {{ $paymentMethod->nickname ?? 'Pago seguro con Stripe' }}
                                                         </p>
                                                     </div>
-                                                    <div class="flex items-center space-x-2">
+                                                    <div class="flex items-center space-x-3">
                                                         @if($paymentMethod->is_default)
-                                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                                                            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-xs font-semibold rounded-full">
                                                                 Por defecto
                                                             </span>
                                                         @endif
-                                                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                                        </svg>
+                                                        <div class="w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-blue-500 transition-colors duration-200 flex items-center justify-center">
+                                                            <div class="w-3 h-3 bg-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 payment-method-selected-indicator"></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </label>
                                     @endforeach
+                                </div>                                <!-- Add More Payment Methods Button -->
+                                <div class="mt-6">
+                                    <a href="{{ route('checkout.payment-methods', $cart->id) }}" 
+                                       class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-3 rounded-lg font-medium transition duration-200 flex items-center justify-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                        </svg>
+                                        <span>Agregar Más Métodos de Pago</span>
+                                    </a>
                                 </div>
                                 
                                 <!-- Stripe Security Badge -->
@@ -245,16 +257,26 @@
                                 <span class="text-sm text-green-700 dark:text-green-300 font-medium">Pago 100% seguro</span>
                             </div>
                         </div>
-                    </div>                    <!-- Action Buttons -->
+                    </div>                    <!-- Primary Action -->
                     <div class="space-y-3">
-                        <a href="{{ route('checkout.payment-methods', $cart->id) }}" 
-                           class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold text-lg transition duration-200 flex items-center justify-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="submit" form="checkoutForm"
+                                class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-bold text-lg transition duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                id="payNowBtn">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            <span>Seleccionar Método de Pago</span>
-                        </a>
+                            <span>💳 Pagar Ahora</span>
+                        </button>
                         
+                        <div class="text-center">
+                            <p class="text-xs text-gray-600 dark:text-gray-400">
+                                💡 Selecciona un método de pago a la izquierda primero
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="space-y-3">
                         <a href="{{ route('checkout.index') }}" 
                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-medium text-center transition duration-200 block">
                             Volver al Checkout
@@ -285,19 +307,88 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('checkoutForm');
-    const submitBtn = document.getElementById('submitBtn');
+    const submitBtn = document.getElementById('payNowBtn');
+    const paymentMethodCards = document.querySelectorAll('.payment-method-card');
+    const paymentMethodRadios = document.querySelectorAll('input[name="payment_method_id"]');
+    
+    // Payment method selection handling
+    paymentMethodRadios.forEach((radio, index) => {
+        radio.addEventListener('change', function() {
+            // Reset all cards
+            paymentMethodCards.forEach(card => {
+                card.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20', 'shadow-md');
+                card.classList.add('border-gray-200', 'dark:border-gray-600');
+                const indicator = card.querySelector('.payment-method-selected-indicator');
+                if (indicator) indicator.classList.add('opacity-0');
+            });
+            
+            // Highlight selected card
+            if (this.checked) {
+                const selectedCard = paymentMethodCards[index];
+                selectedCard.classList.remove('border-gray-200', 'dark:border-gray-600');
+                selectedCard.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20', 'shadow-md');
+                const indicator = selectedCard.querySelector('.payment-method-selected-indicator');
+                if (indicator) indicator.classList.remove('opacity-0');
+                
+                // Show success feedback
+                const tempMsg = document.createElement('div');
+                tempMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                tempMsg.innerHTML = '✓ Método de pago seleccionado';
+                document.body.appendChild(tempMsg);
+                setTimeout(() => tempMsg.remove(), 2000);
+            }
+        });
+    });
     
     // Form submission handling
-    form.addEventListener('submit', function() {
-        // Add loading state
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Procesando pago...
-        `;
+    if (form && submitBtn) {
+        form.addEventListener('submit', function(e) {
+            // Check if payment method is selected
+            const selectedPaymentMethod = document.querySelector('input[name="payment_method_id"]:checked');
+            if (!selectedPaymentMethod) {
+                e.preventDefault();
+                
+                // Show error feedback
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                errorMsg.innerHTML = '❌ Por favor selecciona un método de pago';
+                document.body.appendChild(errorMsg);
+                setTimeout(() => errorMsg.remove(), 3000);
+                
+                // Shake the payment methods section
+                const paymentSection = document.querySelector('.payment-method-card').closest('.bg-white');
+                paymentSection.classList.add('animate-pulse');
+                setTimeout(() => paymentSection.classList.remove('animate-pulse'), 1000);
+                
+                return;
+            }
+            
+            // Add loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Procesando pago...
+            `;
+        });
+    }
+    
+    // Initialize first payment method as selected
+    if (paymentMethodRadios.length > 0) {
+        paymentMethodRadios[0].dispatchEvent(new Event('change'));
+    }
+    
+    // Add click handlers to the entire card for better UX
+    paymentMethodCards.forEach((card, index) => {
+        card.addEventListener('click', function() {
+            const radio = paymentMethodRadios[index];
+            if (radio && !radio.checked) {
+                radio.checked = true;
+                radio.dispatchEvent(new Event('change'));
+            }
+        });
     });
 });
 </script>
