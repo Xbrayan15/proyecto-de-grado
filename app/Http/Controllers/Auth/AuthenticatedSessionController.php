@@ -28,7 +28,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        // Redirect based on user's roles only (no user_type column)
+        if ($user->roles()->whereIn('id', [2])->exists()) {
+            // User has vendedor role (ID 2) - redirect to admin dashboard
+            return redirect()->intended(route('dashboard', absolute: false));
+        } else {
+            // Default to customer dashboard for cliente role (ID 1) or no role
+            return redirect()->intended(route('customer.dashboard', absolute: false));
+        }
     }
 
     /**

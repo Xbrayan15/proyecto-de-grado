@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'user_type' => ['required', 'in:cliente,vendedor'],
         ]);
 
         $user = User::create([
@@ -41,10 +43,22 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Assign the corresponding role by ID
+        if ($request->user_type === 'cliente') {
+            $user->roles()->attach(1); // Role ID 1 = cliente
+        } elseif ($request->user_type === 'vendedor') {
+            $user->roles()->attach(2); // Role ID 2 = vendedor
+        }
+
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect based on user type
+        if ($request->user_type === 'vendedor') {
+            return redirect(route('dashboard', absolute: false));
+        } else {
+            return redirect(route('customer.dashboard', absolute: false));
+        }
     }
 }
