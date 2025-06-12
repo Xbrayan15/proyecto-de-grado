@@ -3,17 +3,17 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
+    <div class="bg-gradient-to-r from-gray-800 to-blue-900 text-white py-16">
         <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4">Catálogo de Productos</h1>
+            <h1 class="text-3xl md:text-5xl font-bold mb-4">Catálogo de Productos</h1>
             <p class="text-xl md:text-2xl opacity-90 mb-8">Descubre nuestra amplia selección de productos</p>
             
             <!-- Search Bar -->
             <div class="max-w-2xl mx-auto">
                 <div class="relative">
                     <input type="text" id="searchInput" placeholder="Buscar productos..." 
-                           class="w-full px-6 py-4 rounded-full text-gray-800 text-lg focus:outline-none focus:ring-4 focus:ring-purple-300 transition duration-300">
-                    <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-600 hover:text-purple-800 transition duration-300">
+                           class="w-full px-6 py-4 rounded-full text-gray-800 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                    <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 transition duration-300">
                         <i class="fas fa-search text-xl"></i>
                     </button>
                 </div>
@@ -27,14 +27,14 @@
             <div class="flex flex-wrap gap-4 items-center">
                 <h3 class="text-lg font-semibold text-gray-800">Filtros:</h3>
                 
-                <select id="categoryFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <select id="categoryFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Todas las categorías</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
                 
-                <select id="priceFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <select id="priceFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Cualquier precio</option>
                     <option value="0-50">$0 - $50</option>
                     <option value="50-100">$50 - $100</option>
@@ -42,7 +42,7 @@
                     <option value="200+">$200+</option>
                 </select>
                 
-                <select id="sortFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <select id="sortFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="name">Nombre A-Z</option>
                     <option value="price-asc">Precio: Menor a Mayor</option>
                     <option value="price-desc">Precio: Mayor a Menor</option>
@@ -90,7 +90,7 @@
                     <div class="p-6">
                         <div class="mb-3">
                             @if($product->category)
-                                <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                                     {{ $product->category->name }}
                                 </span>
                             @endif
@@ -103,7 +103,7 @@
                         @endif
                         
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-2xl font-bold text-purple-600">
+                            <div class="text-2xl font-bold text-blue-600">
                                 ${{ number_format($product->price, 2) }}
                             </div>
                             <div class="text-sm text-gray-500">
@@ -120,7 +120,7 @@
                             
                             @if($product->active && $product->quantity > 0)
                                 <button onclick="addToCart({{ $product->id }})" 
-                                        class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
+                                        class="flex-1 bg-gradient-to-r from-gray-800 to-blue-900 hover:from-gray-900 hover:to-blue-950 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-300">
                                     <i class="fas fa-cart-plus mr-1"></i>Agregar
                                 </button>
                             @else

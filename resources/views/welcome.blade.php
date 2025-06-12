@@ -151,7 +151,17 @@
                                 <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-
+        <div class="space-y-2">
+            <label for="user_type" class="block text-sm font-medium text-gray-700">Tipo de Usuario</label>
+            <select id="user_type" name="user_type" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="">Selecciona tu tipo de usuario</option>
+                <option value="cliente" {{ old('user_type') == 'cliente' ? 'selected' : '' }}>Cliente - Comprar productos</option>
+                <option value="vendedor" {{ old('user_type') == 'vendedor' ? 'selected' : '' }}>Vendedor - Gestionar ventas</option>
+            </select>
+            @error('user_type')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
+        </div>
                         <div class="flex items-center justify-between pt-4">
                             <a href="#" class="text-sm text-blue-600 hover:text-blue-500" id="goToLogin">¿Ya estás registrado?</a>
                             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">

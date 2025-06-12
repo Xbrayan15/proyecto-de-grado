@@ -12,10 +12,11 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center justify-center">
-                    <!-- Productos Dropdown -->
+                    @if(Auth::user()->roles()->whereIn('id', [2])->exists())
+                    <!-- Productos Dropdown (Solo vendedores) -->
                     <div class="relative" x-data="{ open: false, timeout: null }" 
                         @mouseenter="clearTimeout(timeout); open = true" 
-                        @mouseleave="timeout = setTimeout(() => open = false, 150)">
+                        @mouseleave="timeout = setTimeout(() => open = false, 85)">
                         <button class="text-[17px] font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
                             Productos
                         </button>
@@ -36,10 +37,10 @@
                         </div>
                     </div>
 
-                    <!-- Inventario Dropdown -->
+                    <!-- Inventario Dropdown (Solo vendedores) -->
                     <div class="relative" x-data="{ open: false, timeout: null }" 
                         @mouseenter="clearTimeout(timeout); open = true" 
-                        @mouseleave="timeout = setTimeout(() => open = false, 150)">
+                        @mouseleave="timeout = setTimeout(() => open = false, 85)">
                         <button class="text-[17px] font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
                             Inventario
                         </button>
@@ -57,13 +58,24 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
-                    <!-- Compras Dropdown -->
+                    @if(Auth::user()->roles()->whereIn('id', [1])->exists())
+                    <!-- Catálogo (Solo clientes) -->
+                    <div class="relative">
+                        <a href="{{ route('products.catalog') }}" class="text-[17px] font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
+                            Catálogo
+                        </a>
+                    </div>
+                    @endif
+
+                    <!-- Carrito y Checkout (Solo clientes) -->
+                    @if(Auth::user()->roles()->whereIn('id', [1])->exists())
                     <div class="relative" x-data="{ open: false, timeout: null }" 
                         @mouseenter="clearTimeout(timeout); open = true" 
-                        @mouseleave="timeout = setTimeout(() => open = false, 150)">
+                        @mouseleave="timeout = setTimeout(() => open = false, 85)">
                         <button class="text-[17px] font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
-                            Compras
+                            Mi Carrito
                         </button>
                         <div x-show="open" 
                             x-transition:enter="transition ease-out duration-200"
@@ -74,19 +86,18 @@
                             x-transition:leave-end="opacity-0 transform scale-95"
                             class="absolute left-1/2 transform -translate-x-1/2 z-50 mt-1 w-40 py-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-md shadow-lg">
                             <div class="flex flex-col items-center space-y-0.5">
-                                <x-dropdown-link :href="route('carts.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">🛒 Carritos</x-dropdown-link>
-                                <x-dropdown-link :href="route('cart-items.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">📦 Items de Carrito</x-dropdown-link>
+                                <x-dropdown-link :href="route('carts.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">🛒 Mi Carrito</x-dropdown-link>
                                 <x-dropdown-link :href="route('checkout.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">✅ Checkout</x-dropdown-link>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pagos Dropdown -->
+                    <!-- Mis Pagos (Solo clientes) -->
                     <div class="relative" x-data="{ open: false, timeout: null }" 
                         @mouseenter="clearTimeout(timeout); open = true" 
-                        @mouseleave="timeout = setTimeout(() => open = false, 150)">
+                        @mouseleave="timeout = setTimeout(() => open = false, 85)">
                         <button class="text-[17px] font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
-                            Pagos
+                            Mis Pagos
                         </button>
                         <div x-show="open" 
                             x-transition:enter="transition ease-out duration-200"
@@ -98,7 +109,29 @@
                             class="absolute left-1/2 transform -translate-x-1/2 z-50 mt-1 w-40 py-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-md shadow-lg">
                             <div class="flex flex-col items-center space-y-0.5">
                                 <x-dropdown-link :href="route('payment-methods.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">💰 Métodos de Pago</x-dropdown-link>
-                                <x-dropdown-link :href="route('credit-cards.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">💳 Tarjetas</x-dropdown-link>
+                                <x-dropdown-link :href="route('credit-cards.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">💳 Mis Tarjetas</x-dropdown-link>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(Auth::user()->roles()->whereIn('id', [2])->exists())
+                    <!-- Gestión de Pagos (Solo vendedores) -->
+                    <div class="relative" x-data="{ open: false, timeout: null }" 
+                        @mouseenter="clearTimeout(timeout); open = true" 
+                        @mouseleave="timeout = setTimeout(() => open = false, 85)">
+                        <button class="text-[17px] font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
+                            Gestión de Pagos
+                        </button>
+                        <div x-show="open" 
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-300"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="absolute left-1/2 transform -translate-x-1/2 z-50 mt-1 w-40 py-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-md shadow-lg">
+                            <div class="flex flex-col items-center space-y-0.5">
                                 <x-dropdown-link :href="route('payment-gateways.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">🌐 Pasarelas</x-dropdown-link>
                                 <x-dropdown-link :href="route('orders-payments.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">📋 Órdenes</x-dropdown-link>
                                 <x-dropdown-link :href="route('transactions.index')" class="text-[10px] text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 py-1">💸 Transacciones</x-dropdown-link>
@@ -107,10 +140,10 @@
                         </div>
                     </div>
 
-                    <!-- Usuarios Dropdown -->
+                    <!-- Usuarios (Solo vendedores) -->
                     <div class="relative" x-data="{ open: false, timeout: null }" 
                         @mouseenter="clearTimeout(timeout); open = true" 
-                        @mouseleave="timeout = setTimeout(() => open = false, 150)">
+                        @mouseleave="timeout = setTimeout(() => open = false, 85)">
                         <button class="text-[17px] font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
                             Usuarios
                         </button>
@@ -129,6 +162,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>                    <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
