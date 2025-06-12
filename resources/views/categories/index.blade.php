@@ -3,11 +3,11 @@
 @section('content')
 <div class="container mx-auto px-6 py-8">
     <!-- Header Section -->
-    <div class="mb-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl p-6 text-white">
+    <div class="mb-8 bg-gradient-to-r from-gray-800 to-blue-900 rounded-xl p-6 text-white">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold mb-2">Gestión de Categorías</h1>
-                <p class="text-purple-100">Administra todas las categorías de productos del sistema</p>
+                <p class="text-gray-200">Administra todas las categorías de productos del sistema</p>
             </div>
             <div class="hidden md:block">
                 <div class="bg-white/20 rounded-lg p-4">
@@ -24,8 +24,8 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z"/>
                         </svg>
                     </div>
@@ -102,26 +102,13 @@
                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                 </div>
 
-                <!-- Filter by Products -->
-                <div class="relative">
-                    <select id="productFilter" class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="">Filtrar por productos</option>
-                        <option value="with_products">Con productos</option>
-                        <option value="without_products">Sin productos</option>
-                        <option value="many_products">Más de 5 productos</option>
-                    </select>
-                </div>
-
                 <!-- Sort Options -->
-                <div class="relative">
-                    <select id="sortFilter" class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="">Ordenar por</option>
-                        <option value="name_asc">Nombre A-Z</option>
-                        <option value="name_desc">Nombre Z-A</option>
-                        <option value="products_asc">Menos productos</option>
-                        <option value="products_desc">Más productos</option>
-                        <option value="newest">Más reciente</option>
-                        <option value="oldest">Más antiguo</option>
+                <div class="relative w-40">
+                    <select id="sortFilter" class="block w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">Ordenar</option>
+                        <option value="name_asc">A-Z</option>
+                        <option value="newest">Recientes</option>
+                        <option value="oldest">Antiguos</option>
                     </select>
                 </div>
             </div>
@@ -132,12 +119,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
                     Limpiar
-                </button>
-                <button onclick="exportData()" class="px-4 py-2 text-blue-600 bg-blue-100 hover:bg-blue-200 rounded-lg transition duration-200">
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Exportar
                 </button>
                 <a href="{{ route('categories.create') }}" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-200 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -222,7 +222,16 @@ a {
     text-decoration: none;
     margin: 15px 0;
 }
-button {
+nav button {
+    background-color: transparent;
+    border: none;
+    color: #FF4B2B;
+    font-size: 50px;
+    font-weight: bold;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+button:not(nav button) {
     border-radius: 20px;
     border: 1px solid #FF4B2B;
     background-color: #FF4B2B;
@@ -234,13 +243,13 @@ button {
     text-transform: uppercase;
     transition: transform 80ms ease-in;
 }
-button:active {
+button:not(nav button):active {
     transform: scale(0.95);
 }
-button:focus {
+button:not(nav button):focus {
     outline: none;
 }
-button.ghost {
+button:not(nav button).ghost {
     background-color: transparent;
     border-color: #FFFFFF;
 }

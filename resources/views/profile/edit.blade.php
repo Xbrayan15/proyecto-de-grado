@@ -11,7 +11,7 @@
                         Mi Perfil
                     </h1>
                     <p class="text-gray-600 dark:text-gray-400 mt-2">
-                        Gestiona tu información personal y configuración de cuenta
+                        Gestiona tu información personal y configuración de tu cuenta
                     </p>
                     <!-- Breadcrumb -->
                     <nav class="flex mt-3" aria-label="Breadcrumb">
@@ -72,39 +72,36 @@
                     </div>
                 </div>
 
-                <!-- Password Section -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            Cambiar Contraseña
-                        </h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            Asegúrate de usar una contraseña larga y aleatoria para mantener tu cuenta segura
-                        </p>
+                <!-- Security Grid -->
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <!-- Password Section -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Cambiar Contraseña</h3>
+                                </div>
+                            </div>
+                            @include('profile.partials.update-password-form')
+                        </div>
                     </div>
-                    <div class="p-6">
-                        @include('profile.partials.update-password-form')
-                    </div>
-                </div>
 
-                <!-- Delete Account Section -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                    <div class="px-6 py-4 border-b border-red-200 dark:border-red-700">
-                        <h3 class="text-lg font-semibold text-red-900 dark:text-red-300 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            Eliminar Cuenta
-                        </h3>
-                        <p class="text-sm text-red-600 dark:text-red-400 mt-1">
-                            Una vez eliminada tu cuenta, todos los recursos y datos serán eliminados permanentemente
-                        </p>
-                    </div>
-                    <div class="p-6">
-                        @include('profile.partials.delete-user-form')
+                    <!-- Delete Account Section -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Eliminar</h3>
+                                </div>
+                            </div>
+                            @include('profile.partials.delete-user-form')
+                        </div>
                     </div>
                 </div>
             </div>
@@ -150,19 +147,6 @@
                             <span>Métodos de Pago</span>
                         </a>
                     </div>
-                </div>
-
-                <!-- Security Info -->
-                <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900 dark:to-emerald-900 rounded-lg p-6">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                        <h4 class="text-sm font-semibold text-green-800 dark:text-green-200">Cuenta Segura</h4>
-                    </div>
-                    <p class="text-xs text-green-700 dark:text-green-300">
-                        Tu cuenta está protegida con autenticación segura. Revisa regularmente tu información para mantenerla actualizada.
-                    </p>
                 </div>
             </div>
         </div>
