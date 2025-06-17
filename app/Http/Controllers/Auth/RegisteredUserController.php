@@ -23,6 +23,14 @@ class RegisteredUserController extends Controller
         return view('auth.register');
     }
 
+    public function createVendor(): View
+    {
+        if (!auth()->user() || !auth()->user()->roles()->whereIn('id', [2])->exists()) {
+            abort(403, 'Unauthorized action.');
+        }
+        return view('auth.register-vendor');
+    }
+
     /**
      * Handle an incoming registration request.
      *
@@ -36,6 +44,13 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'user_type' => ['required', 'in:cliente,vendedor'],
         ]);
+
+        // For vendor registration, check if the current user has permission
+        if ($request->user_type === 'vendedor') {
+            if (!auth()->user() || !auth()->user()->roles()->whereIn('id', [2])->exists()) {
+                abort(403, 'Unauthorized action.');
+            }
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -52,13 +67,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        // Redirect based on user type
-        if ($request->user_type === 'vendedor') {
-            return redirect(route('dashboard', absolute: false));
-        } else {
+        // Only login if it's a client registration
+        if ($request->user_type === 'cliente') {
+            Auth::login($user);
             return redirect(route('customer.dashboard', absolute: false));
+        } else {
+            // For vendor registration, redirect back with success message
+            return redirect()->route('users.index')->with('success', 'Vendedor registrado exitosamente');
         }
     }
 }

@@ -111,6 +111,16 @@
                         <option value="oldest">Antiguos</option>
                     </select>
                 </div>
+
+                <!-- Product Filter -->
+                <div class="relative w-48">
+                    <select id="productFilter" class="block w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">Todos los productos</option>
+                        <option value="with_products">Con productos</option>
+                        <option value="without_products">Sin productos</option>
+                        <option value="many_products">5+ productos</option>
+                    </select>
+                </div>
             </div>
 
             <div class="flex gap-3">
@@ -307,7 +317,6 @@
                         <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                            </svg>
                         </div>
                     </div>
                     <div class="ml-4">
@@ -425,6 +434,9 @@ function sortTable(criteria) {
         
         switch (criteria) {
             case 'id':
+                aVal = parseInt(a.querySelector('td:first-child').textContent.replace('#', ''));
+                bVal = parseInt(b.querySelector('td:first-child').textContent.replace('#', ''));
+                return aVal - bVal;
             case 'name_asc':
                 aVal = a.dataset.name;
                 bVal = b.dataset.name;

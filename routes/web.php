@@ -23,6 +23,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MovementTypeController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\ProductImageController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -158,6 +159,10 @@ Route::middleware(['auth', 'verified', 'check.user.type:vendedor'])->group(funct
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
     Route::resource('users', UserController::class);
+    
+    // Vendor registration routes (protected)
+    Route::get('/register/vendor', [RegisteredUserController::class, 'createVendor'])->name('register.vendor');
+    Route::post('/register/vendor', [RegisteredUserController::class, 'store'])->name('register.vendor.store');
 });
 
 require __DIR__.'/auth.php';
