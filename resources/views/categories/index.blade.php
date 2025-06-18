@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto px-6 py-8">
     <!-- Header Section -->
-    <div class="mb-8 bg-gradient-to-r from-gray-800 to-blue-900 rounded-xl p-6 text-white">
+    <div class="mb-8 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-xl p-6 text-white">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold mb-2">Gestión de Categorías</h1>

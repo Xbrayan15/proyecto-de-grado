@@ -21,62 +21,61 @@
             </div>
 
             <form id="category-form" action="{{ route('categories.store') }}" method="POST" class="space-y-6">
-                    @csrf
-                    
-                    <!-- Name Field -->
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-                            Nombre
-                        </label>
-                        <input type="text" 
-                            name="name" 
-                            id="name" 
-                            value="{{ old('name') }}" 
-                            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm
-                                focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900
-                                @error('name') border-red-500 @enderror" 
-                            placeholder="Nombre de la categoría"
-                            required>
-                        <div class="flex justify-between items-center mt-1">
-                            <div class="text-xs text-gray-500" id="name-counter">0/255</div>
-                            @error('name')
-                                <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                @csrf
+                
+                <!-- Name Field -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                        Nombre
+                    </label>
+                    <input type="text" 
+                        name="name" 
+                        id="name" 
+                        value="{{ old('name') }}" 
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm
+                            focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900
+                            @error('name') border-red-500 @enderror" 
+                        placeholder="Nombre de la categoría"
+                        required>
+                    <div class="flex justify-between items-center mt-1">
+                        <div class="text-xs text-gray-500" id="name-counter">0/255</div>
+                        @error('name')
+                            <p class="text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
+                </div>
 
-                    <!-- Description Field -->
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-                            Descripción
-                        </label>
-                        <textarea 
-                            name="description" 
-                            id="description" 
-                            rows="4" 
-                            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm
-                                focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900
-                                @error('description') border-red-500 @enderror" 
-                            placeholder="Descripción">{{ old('description') }}</textarea>
-                        <div class="flex justify-between items-center mt-1">
-                            <div class="text-xs text-gray-500" id="description-counter">0/500</div>
-                            @error('description')
-                                <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                <!-- Description Field -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                        Descripción
+                    </label>
+                    <textarea 
+                        name="description" 
+                        id="description" 
+                        rows="4" 
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm
+                            focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900
+                            @error('description') border-red-500 @enderror" 
+                        placeholder="Descripción">{{ old('description') }}</textarea>
+                    <div class="flex justify-between items-center mt-1">
+                        <div class="text-xs text-gray-500" id="description-counter">0/500</div>
+                        @error('description')
+                            <p class="text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
+                </div>
 
-                    <!-- Action Buttons -->
-                    <div class="pt-6 border-t border-gray-200">
-                        <button type="submit" id="submit-btn" 
-                            class="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 
-                            focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 
-                            disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
-                            Crear Categoría
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <!-- Action Buttons -->
+                <div class="pt-6 border-t border-gray-200">
+                    <button type="submit" id="submit-btn" 
+                        class="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 
+                        focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 
+                        disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+                        Crear Categoría
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -94,15 +93,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const descriptionCounter = document.getElementById('description-counter');
 
     // Real-time updates
-    nameInput.addEventListener('input', function() {
-        updateProgress();
-        updateCounters();
-    });
+    nameInput.addEventListener('input', updateAll);
+    descriptionInput.addEventListener('input', updateAll);
 
-    descriptionInput.addEventListener('input', function() {
+    function updateAll() {
         updateProgress();
         updateCounters();
-    });
+    }
 
     function updateProgress() {
         const hasName = nameInput.value.trim().length > 0;
@@ -129,8 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initial setup
-    updateProgress();
-    updateCounters();
+    updateAll();
 });
 </script>
 @endsection

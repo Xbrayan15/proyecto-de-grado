@@ -1,36 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Header with gradient background -->
-<div class="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 shadow-lg">
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex flex-col md:flex-row md:items-start md:justify-between">
-            <div class="flex-1">
-                <div class="flex items-center mb-2">
-                    <i class="fas fa-tag text-white text-2xl mr-3"></i>
-                    <h1 class="text-3xl font-bold text-white">{{ $category->name }}</h1>
-                </div>
-                <p class="text-purple-100 mb-3">{{ $category->description ?: 'Sin descripción disponible' }}</p>
-                <div class="flex items-center text-purple-100 text-sm">
-                    <i class="fas fa-calendar mr-2"></i>
-                    Creada el {{ $category->created_at->format('d/m/Y \a \l\a\s H:i') }}
-                </div>
-            </div>
-            <div class="mt-4 md:mt-0 flex flex-wrap gap-3">
-                <a href="{{ route('categories.edit', $category->id) }}" class="inline-flex items-center px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-white rounded-lg transition-all duration-300 backdrop-blur-sm">
+<div class="container mx-auto px-4 py-8">
+    <!-- Simple Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ $category->name }}</h1>
+        <div class="flex items-center justify-between">
+            <p class="text-gray-600">{{ $category->description ?: 'Sin descripción disponible' }}</p>
+            <div class="flex gap-3">
+                <a href="{{ route('categories.edit', $category->id) }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-all duration-300">
                     <i class="fas fa-edit mr-2"></i>
                     Editar
                 </a>
-                <a href="{{ route('categories.index') }}" class="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-300 backdrop-blur-sm">
+                <a href="{{ route('categories.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-all duration-300">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Volver al Listado
                 </a>
             </div>
         </div>
     </div>
-</div>
-
-<div class="container mx-auto px-4 py-8">
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-xl shadow-lg p-6">
@@ -82,9 +70,9 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
         <!-- Main Content -->
-        <div class="lg:col-span-2">
+        <div class="lg:col-span-1">
             <!-- Category Information -->
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
@@ -156,19 +144,6 @@
                             {{ $category->products_count ?? 0 }}
                         </span>
                     </h2>
-                    
-                    @if($category->products && $category->products->count() > 0)
-                    <div class="flex gap-2">
-                        <select id="product-filter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 p-2">
-                            <option value="all">Todos los productos</option>
-                            <option value="active">Solo activos</option>
-                            <option value="inactive">Solo inactivos</option>
-                        </select>
-                        <button id="export-products" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors duration-300">
-                            <i class="fas fa-download mr-1"></i>Exportar
-                        </button>
-                    </div>
-                    @endif
                 </div>
 
                 @if($category->products && $category->products->count() > 0)
@@ -264,98 +239,6 @@
                 @endif
             </div>
         </div>
-
-        <!-- Sidebar -->
-        <div class="lg:col-span-1">
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-bolt text-purple-600 mr-2"></i>
-                    Acciones Rápidas
-                </h3>
-                
-                <div class="space-y-3">
-                    <a href="{{ route('categories.edit', $category->id) }}" class="block w-full bg-yellow-500 hover:bg-yellow-600 text-white text-center py-2 px-4 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-edit mr-2"></i>Editar Categoría
-                    </a>
-                    
-                    @if(Route::has('products.create'))
-                    <a href="{{ route('products.create') }}?category={{ $category->id }}" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-2 px-4 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-plus mr-2"></i>Agregar Producto
-                    </a>
-                    @endif
-                    
-                    <a href="{{ route('categories.index') }}" class="block w-full bg-gray-500 hover:bg-gray-600 text-white text-center py-2 px-4 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-list mr-2"></i>Ver Todas las Categorías
-                    </a>
-                    
-                    <button onclick="openDeleteModal()" class="block w-full bg-red-500 hover:bg-red-600 text-white text-center py-2 px-4 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-trash mr-2"></i>Eliminar Categoría
-                    </button>
-                </div>
-            </div>
-
-            <!-- Category Analytics -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-chart-bar text-purple-600 mr-2"></i>
-                    Análisis de Categoría
-                </h3>
-                
-                <div class="space-y-4">
-                    @if($category->products && $category->products->count() > 0)
-                    <!-- Stock Status Distribution -->
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-700 mb-2">Distribución de Stock</h4>
-                        @php
-                            $highStock = $category->products->where('quantity', '>', 10)->count();
-                            $lowStock = $category->products->whereBetween('quantity', [1, 10])->count();
-                            $outOfStock = $category->products->where('quantity', 0)->count();
-                            $total = $category->products->count();
-                        @endphp
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-green-600">Stock Alto:</span>
-                                <span class="font-medium">{{ $highStock }} ({{ $total > 0 ? round(($highStock/$total)*100) : 0 }}%)</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-yellow-600">Stock Bajo:</span>
-                                <span class="font-medium">{{ $lowStock }} ({{ $total > 0 ? round(($lowStock/$total)*100) : 0 }}%)</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-red-600">Agotado:</span>
-                                <span class="font-medium">{{ $outOfStock }} ({{ $total > 0 ? round(($outOfStock/$total)*100) : 0 }}%)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Price Range -->
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-700 mb-2">Rango de Precios</h4>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Mínimo:</span>
-                                <span class="font-medium">${{ number_format($category->products->min('price'), 2) }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Máximo:</span>
-                                <span class="font-medium">${{ number_format($category->products->max('price'), 2) }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Promedio:</span>
-                                <span class="font-medium">${{ number_format($category->products->avg('price'), 2) }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    @else
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-chart-bar text-3xl mb-2"></i>
-                        <p class="text-sm">No hay datos para analizar</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -403,30 +286,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const productFilter = document.getElementById('product-filter');
     const productRows = document.querySelectorAll('.product-row');
     const productsTable = document.getElementById('products-table');
-    const exportBtn = document.getElementById('export-products');
-    
-    // Filter functionality
-    if (productFilter) {
-        productFilter.addEventListener('change', function() {
-            const filterValue = this.value;
-            
-            productRows.forEach(row => {
-                const isActive = row.dataset.active === 'true';
-                let shouldShow = true;
-                
-                if (filterValue === 'active' && !isActive) {
-                    shouldShow = false;
-                } else if (filterValue === 'inactive' && isActive) {
-                    shouldShow = false;
-                }
-                
-                row.style.display = shouldShow ? '' : 'none';
-            });
-        });
-    }
     
     // Sorting functionality
     if (productsTable) {
@@ -493,35 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Re-append sorted rows
                 rows.forEach(row => tbody.appendChild(row));
             });
-        });
-    }
-    
-    // Export functionality
-    if (exportBtn) {
-        exportBtn.addEventListener('click', function() {
-            const visibleRows = Array.from(productRows).filter(row => row.style.display !== 'none');
-            
-            let csvContent = 'Código,Nombre,Precio,Stock,Estado\n';
-            
-            visibleRows.forEach(row => {
-                const code = row.dataset.code;
-                const name = row.dataset.name;
-                const price = row.dataset.price;
-                const quantity = row.dataset.quantity;
-                const active = row.dataset.active === 'true' ? 'Activo' : 'Inactivo';
-                
-                csvContent += `"${code}","${name}","${price}","${quantity}","${active}"\n`;
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `productos_categoria_{{ $category->name }}_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
         });
     }
 });
