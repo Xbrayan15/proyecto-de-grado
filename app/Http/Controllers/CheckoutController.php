@@ -10,6 +10,9 @@ use App\Models\PaymentMethod;
 use App\Models\CreditCard;
 use App\Models\User;
 use App\Models\PaymentGateway;
+use App\Models\Product;
+use App\Models\InventoryMovement;
+use App\Models\MovementType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Stripe\Stripe;
@@ -118,6 +121,9 @@ class CheckoutController extends Controller
 
             // Actualizar estado del carrito solo si el pago fue exitoso
             if ($paymentStatus === 'paid') {
+                // Actualizar stock de productos y crear movimientos de inventario
+                $this->updateProductStock($cart);
+                
                 $cart->update(['status' => 'purchased']);
                 $orderPayment->update(['status' => 'paid']);
             } else {
@@ -314,6 +320,9 @@ class CheckoutController extends Controller
 
             // Actualizar estados
             if ($paymentStatus === 'paid') {
+                // Actualizar stock de productos y crear movimientos de inventario
+                $this->updateProductStock($cart);
+                
                 $cart->update(['status' => 'purchased']);
                 $orderPayment->update(['status' => 'paid']);
             } else {
@@ -441,6 +450,9 @@ class CheckoutController extends Controller
 
             // Actualizar estados
             if ($paymentStatus === 'paid') {
+                // Actualizar stock de productos y crear movimientos de inventario
+                $this->updateProductStock($cart);
+                
                 $cart->update(['status' => 'purchased']);
                 $orderPayment->update(['status' => 'paid']);
             } else {
@@ -627,6 +639,45 @@ class CheckoutController extends Controller
                 'error' => $e->getMessage(),
                 'message' => 'Error al procesar el pago con tarjeta existente'
             ];
+        }
+    }
+
+    /**
+     * Actualizar stock de productos después de una venta exitosa
+     */
+    private function updateProductStock(Cart $cart)
+    {
+        // Buscar el tipo de movimiento "Venta" o crear uno por defecto
+        $salesMovementType = MovementType::firstOrCreate(
+            ['name' => 'Venta', 'effect' => 'out'],
+            ['name' => 'Venta', 'effect' => 'out']
+        );
+
+        foreach ($cart->cartItems as $cartItem) {
+            $product = $cartItem->product;
+            
+            if ($product) {
+                // Verificar que hay suficiente stock antes de actualizar
+                if ($product->quantity >= $cartItem->quantity) {
+                    // Reducir el stock del producto
+                    $product->decrement('quantity', $cartItem->quantity);
+                    
+                    // Crear movimiento de inventario para registrar la salida
+                    InventoryMovement::create([
+                        'movement_date' => now(),
+                        'movement_type_id' => $salesMovementType->id,
+                        'product_id' => $product->id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $cartItem->unit_price,
+                        'user_id' => Auth::id(),
+                        'notes' => "Venta - Carrito #{$cart->id}",
+                    ]);
+                    
+                    \Log::info("Stock actualizado para producto {$product->name}: -{$cartItem->quantity} unidades");
+                } else {
+                    \Log::warning("Stock insuficiente para producto {$product->name}. Stock actual: {$product->quantity}, cantidad solicitada: {$cartItem->quantity}");
+                }
+            }
         }
     }
 }

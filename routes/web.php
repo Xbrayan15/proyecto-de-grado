@@ -23,7 +23,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MovementTypeController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\ProductImageController;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,6 +40,16 @@ Route::get('/customer-dashboard', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Admin dashboard with advanced metrics
+Route::get('/admin-dashboard', [AdminDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.dashboard');
+
+// API endpoint for dashboard chart data
+Route::get('/admin-dashboard/chart-data', [AdminDashboardController::class, 'getChartData'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.dashboard.chart-data');
 
 // Profile routes accessible to all authenticated users
 Route::middleware('auth')->group(function () {
