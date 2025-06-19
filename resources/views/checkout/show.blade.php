@@ -50,7 +50,7 @@
                             <p class="text-green-100">{{ $orderPayment->created_at->format('d/m/Y H:i') }}</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-bold">${{ number_format($orderPayment->amount, 2) }}</div>
+                            <div class="text-2xl font-bold">${{ number_format($orderPayment->total, 2) }}</div>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
                                 @if($orderPayment->status === 'completed') bg-green-100 text-green-800
                                 @elseif($orderPayment->status === 'pending') bg-yellow-100 text-yellow-800
@@ -278,10 +278,9 @@
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Resumen de la Orden</h3>
                         
-                        <div class="space-y-3">
-                            <div class="flex justify-between">
+                        <div class="space-y-3">                            <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-400">Subtotal:</span>
-                                <span class="font-medium text-gray-900 dark:text-white">${{ number_format($orderPayment->amount, 2) }}</span>
+                                <span class="font-medium text-gray-900 dark:text-white">${{ number_format($orderPayment->total, 2) }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-400">Impuestos:</span>
@@ -294,7 +293,7 @@
                             <hr class="border-gray-200 dark:border-gray-700">
                             <div class="flex justify-between">
                                 <span class="text-lg font-semibold text-gray-900 dark:text-white">Total:</span>
-                                <span class="text-lg font-bold text-green-600">${{ number_format($orderPayment->amount, 2) }}</span>
+                                <span class="text-lg font-bold text-green-600">${{ number_format($orderPayment->total, 2) }}</span>
                             </div>
                         </div>
                     </div>
