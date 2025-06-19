@@ -58,12 +58,12 @@ class CheckoutController extends Controller
         
         if (!$cart) {
             return redirect()->route('carts.index')->with('error', 'Carrito no encontrado o no tienes permisos para acceder a él.');
-        }        if ($cart->cartItems->isEmpty()) {
+        }
+        if ($cart->cartItems->isEmpty()) {
             return redirect()->route('carts.index')->with('error', 'No tienes productos en tu carrito para proceder al checkout.');
         }
-          // Preload user's payment methods to avoid N+1 queries
+        // Preload user's payment methods to avoid N+1 queries
         Auth::user()->load('paymentMethods');
-        
         return view('checkout.create', compact('cart'));
     }
 
@@ -94,9 +94,10 @@ class CheckoutController extends Controller
                 throw new \Exception('El carrito está vacío');
             }
 
-            // Calcular total usando unit_price
+            // Calcular total usando unit_price o precio del producto como respaldo
             $totalAmount = $cart->cartItems->sum(function ($item) {
-                return $item->quantity * $item->unit_price;
+                $price = $item->unit_price > 0 ? $item->unit_price : $item->product->price;
+                return $item->quantity * $price;
             });            // Crear orden de pago con el campo correcto
             $orderPayment = OrdersPayment::create([
                 'user_id' => Auth::id(),
@@ -289,9 +290,10 @@ class CheckoutController extends Controller
                 $query->where('user_id', Auth::id());
             })->findOrFail($request->credit_card_id);
 
-            // Calcular total
+            // Calcular total usando unit_price o precio del producto como respaldo
             $totalAmount = $cart->cartItems->sum(function ($item) {
-                return $item->quantity * $item->unit_price;
+                $price = $item->unit_price > 0 ? $item->unit_price : $item->product->price;
+                return $item->quantity * $price;
             });
 
             // Crear orden de pago
